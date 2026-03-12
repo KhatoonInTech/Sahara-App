@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Globe, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 
@@ -15,6 +15,19 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
   const t = translations[language];
 
   const steps = [
+    {
+      title: language === 'en' ? 'Welcome to Sahara' : 'سہارا میں خوش آمدید',
+      content: (
+        <div className="text-center px-6">
+          <p className={`text-gray-600 mb-6 ${language === 'ur' ? 'urdu-text' : ''}`}>
+            {language === 'en' 
+              ? 'Your safe space for support, connection, and healing.' 
+              : 'سپورٹ، تعلق اور شفا کے لیے آپ کی محفوظ جگہ۔'}
+          </p>
+        </div>
+      ),
+      icon: <HandHeart className="text-primary" size={64} />
+    },
     {
       title: t.onboarding.selectLanguage,
       content: (

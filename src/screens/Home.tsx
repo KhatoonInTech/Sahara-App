@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageCircle, AlertTriangle, HeartPulse, Users, HelpCircle, Shield, ArrowRight } from 'lucide-react';
+import { MessageCircle, AlertTriangle, HeartPulse, Users, HelpCircle, Shield, ArrowRight, HandHeart } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 
@@ -65,13 +65,18 @@ export default function Home({ language }: HomeProps) {
 
   return (
     <div className="p-6">
-      <header className="mb-8 mt-4">
-        <h1 className={`text-3xl font-bold mb-2 ${language === 'ur' ? 'urdu-text' : ''}`}>
-          {t.home.title}
-        </h1>
-        <p className={`opacity-60 ${language === 'ur' ? 'urdu-text' : ''}`}>
-          {t.home.subtitle}
-        </p>
+      <header className="mb-8 mt-4 flex items-center gap-4">
+        <div className="p-3 bg-primary/10 rounded-2xl text-primary">
+          <HandHeart size={32} />
+        </div>
+        <div>
+          <h1 className={`text-3xl font-bold mb-1 ${language === 'ur' ? 'urdu-text' : ''}`}>
+            {t.home.title}
+          </h1>
+          <p className={`opacity-60 text-sm ${language === 'ur' ? 'urdu-text' : ''}`}>
+            {t.home.subtitle}
+          </p>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 gap-4">

@@ -47,13 +47,16 @@ export default function App() {
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
   const toggleLanguage = () => setLanguage(prev => prev === 'en' ? 'ur' : 'en');
   const triggerQuickExit = () => setIsCamouflaged(true);
+  const lockApp = () => setIsAuthenticated(false);
 
   const layoutProps = {
     language,
     theme,
     toggleTheme,
     toggleLanguage,
-    triggerQuickExit
+    triggerQuickExit,
+    lockApp,
+    isLockEnabled: storage.get('appLockEnabled') || false
   };
 
   return (

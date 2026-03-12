@@ -26,6 +26,7 @@ export default function Privacy({ language }: PrivacyProps) {
       storage.set('appLockEnabled', false);
       storage.remove('appPin');
       setIsLockEnabled(false);
+      window.location.reload();
     } else {
       setShowLockSetup(true);
     }
@@ -86,6 +87,31 @@ export default function Privacy({ language }: PrivacyProps) {
               <ChevronRight size={18} className="text-text-muted opacity-30" />
             )}
           </button>
+          
+          {isLockEnabled && (
+            <>
+              <div className="h-px bg-section-bg mx-5" />
+              <button 
+                onClick={() => window.location.reload()}
+                className="w-full flex items-center justify-between p-5 hover:bg-section-bg transition-colors text-primary"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-2xl bg-primary/10">
+                    <Lock size={20} />
+                  </div>
+                  <div className="text-left">
+                    <h3 className={`font-bold ${language === 'ur' ? 'urdu-text' : ''}`}>
+                      {language === 'en' ? 'Lock Now' : 'ابھی لاک کریں'}
+                    </h3>
+                    <p className="text-[10px] text-text-muted">
+                      {language === 'en' ? 'Immediately lock the application' : 'درخواست کو فوری طور پر لاک کریں'}
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="opacity-30" />
+              </button>
+            </>
+          )}
           
           <div className="h-px bg-section-bg mx-5" />
 

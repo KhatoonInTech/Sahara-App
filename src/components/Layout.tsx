@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ShieldAlert, Home, MessageCircle, BookOpen, Users, HelpCircle, Shield, Sun, Moon } from 'lucide-react';
+import { ShieldAlert, Home, MessageCircle, BookOpen, Users, HelpCircle, Shield, Sun, Moon, Lock, HandHeart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LayoutProps {
@@ -11,6 +11,8 @@ interface LayoutProps {
   toggleTheme: () => void;
   toggleLanguage: () => void;
   triggerQuickExit: () => void;
+  lockApp: () => void;
+  isLockEnabled: boolean;
 }
 
 export default function Layout({ 
@@ -20,7 +22,9 @@ export default function Layout({
   theme, 
   toggleTheme,
   toggleLanguage,
-  triggerQuickExit
+  triggerQuickExit,
+  lockApp,
+  isLockEnabled
 }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +57,7 @@ export default function Layout({
           theme === 'dark' ? 'bg-card-bg/40 border-text-muted/10 backdrop-blur-md' : 'bg-card-bg/40 border-text-muted/10 backdrop-blur-md'
         }`}>
           <div className="flex items-center gap-2">
-            <Shield className="text-primary" size={24} />
+            <HandHeart className="text-primary" size={24} />
             <h1 className="font-bold text-xl tracking-tight">Sahara</h1>
           </div>
           
@@ -76,6 +80,19 @@ export default function Layout({
             >
               <ShieldAlert size={20} />
             </button>
+
+            {/* App Lock Button */}
+            {isLockEnabled && (
+              <button 
+                onClick={lockApp}
+                className={`p-2 rounded-full transition-colors ${
+                  theme === 'dark' ? 'bg-section-bg text-primary hover:bg-primary/20' : 'bg-section-bg text-primary hover:bg-primary/20'
+                }`}
+                title="Lock App"
+              >
+                <Lock size={20} />
+              </button>
+            )}
 
             {/* Theme Toggle */}
             <button 
