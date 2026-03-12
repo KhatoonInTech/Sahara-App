@@ -38,6 +38,7 @@ export default function Privacy({ language }: PrivacyProps) {
       setIsLockEnabled(true);
       setShowLockSetup(false);
       alert(t.privacy.pinSuccess);
+      window.location.reload();
     }
   };
 
