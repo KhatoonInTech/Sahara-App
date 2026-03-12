@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart } from 'lucide-react';
+import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 
@@ -53,6 +53,27 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
         </div>
       ),
       icon: <Globe className="text-primary" size={48} />
+    },
+    {
+      title: t.privacy.appLock,
+      content: (
+        <div className="text-center px-6">
+          <p className={`text-gray-600 mb-6 ${language === 'ur' ? 'urdu-text' : ''}`}>
+            {language === 'en' 
+              ? 'Would you like to secure your app with a 4-digit PIN? This protects your data from unauthorized access.' 
+              : 'کیا آپ 4 ہندسوں کے پن کے ساتھ اپنی ایپ کو محفوظ بنانا چاہیں گے؟ یہ آپ کے ڈیٹا کو غیر مجاز رسائی سے بچاتا ہے۔'}
+          </p>
+          <div className="flex flex-col gap-3">
+            <div className="p-4 rounded-2xl bg-primary/10 flex items-center gap-3 text-left mb-4">
+              <Lock className="text-primary shrink-0" size={20} />
+              <p className="text-xs text-primary font-medium">
+                {language === 'en' ? 'You can enable this anytime in Privacy & Safety settings.' : 'آپ اسے کسی بھی وقت رازداری اور حفاظت کی ترتیبات میں فعال کر سکتے ہیں۔'}
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+      icon: <Lock className="text-primary" size={48} />
     },
     {
       title: t.onboarding.privacyPromise,

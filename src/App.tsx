@@ -25,6 +25,26 @@ export default function App() {
   const [isLocked, setIsLocked] = useState<boolean>(storage.get('appLockEnabled') || false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    const enabled = storage.get('appLockEnabled') || false;
+    setIsLocked(enabled);
+  }, []);
+
+  // Sync lock status from storage periodically or on focus
+  useEffect(() => {
+    const checkLock = () => {
+      const enabled = storage.get('appLockEnabled') || false;
+      setIsLocked(enabled);
+    };
+    
+    window.addEventListener('storage', checkLock);
+    window.addEventListener('focus', checkLock);
+    return () => {
+      window.removeEventListener('storage', checkLock);
+      window.removeEventListener('focus', checkLock);
+    };
+  }, []);
+
   const t = translations[language];
 
   useEffect(() => {
@@ -61,42 +81,52 @@ export default function App() {
 
   return (
     <Router>
-      <AnimatePresence>
-        {isLocked && !isAuthenticated && (
+      <AnimatePresence mode="wait">
+        {isLocked && !isAuthenticated ? (
           <LockScreen 
+            key="lock-screen"
             language={language} 
             mode="unlock" 
             storedPin={storage.get('appPin')} 
             onSuccess={() => setIsAuthenticated(true)} 
           />
+        ) : (
+          <motion.div 
+            key="app-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="min-h-screen"
+          >
+            <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
+            <Routes>
+              {!onboarded ? (
+                <Route 
+                  path="*" 
+                  element={
+                    <Onboarding 
+                      language={language} 
+                      setLanguage={setLanguage} 
+                      onComplete={() => setOnboarded(true)} 
+                    />
+                  } 
+                />
+              ) : (
+                <>
+                  <Route path="/home" element={<Layout {...layoutProps}><Home language={language} /></Layout>} />
+                  <Route path="/chat" element={<Layout {...layoutProps}><Chat language={language} theme={theme} /></Layout>} />
+                  <Route path="/emergency" element={<Layout {...layoutProps}><Emergency language={language} /></Layout>} />
+                  <Route path="/education" element={<Layout {...layoutProps}><Education language={language} /></Layout>} />
+                  <Route path="/community" element={<Layout {...layoutProps}><Community language={language} /></Layout>} />
+                  <Route path="/help" element={<Layout {...layoutProps}><HelpCenter language={language} /></Layout>} />
+                  <Route path="/privacy" element={<Layout {...layoutProps}><Privacy language={language} /></Layout>} />
+                  <Route path="*" element={<Navigate to="/home" replace />} />
+                </>
+              )}
+            </Routes>
+          </motion.div>
         )}
       </AnimatePresence>
-      <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
-      <Routes>
-        {!onboarded ? (
-          <Route 
-            path="*" 
-            element={
-              <Onboarding 
-                language={language} 
-                setLanguage={setLanguage} 
-                onComplete={() => setOnboarded(true)} 
-              />
-            } 
-          />
-        ) : (
-          <>
-            <Route path="/home" element={<Layout {...layoutProps}><Home language={language} /></Layout>} />
-            <Route path="/chat" element={<Layout {...layoutProps}><Chat language={language} theme={theme} /></Layout>} />
-            <Route path="/emergency" element={<Layout {...layoutProps}><Emergency language={language} /></Layout>} />
-            <Route path="/education" element={<Layout {...layoutProps}><Education language={language} /></Layout>} />
-            <Route path="/community" element={<Layout {...layoutProps}><Community language={language} /></Layout>} />
-            <Route path="/help" element={<Layout {...layoutProps}><HelpCenter language={language} /></Layout>} />
-            <Route path="/privacy" element={<Layout {...layoutProps}><Privacy language={language} /></Layout>} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
-          </>
-        )}
-      </Routes>
     </Router>
   );
 }
