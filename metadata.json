@@ -1,0 +1,8 @@
+{
+  "name": "Sahara: Survivor Support",
+  "description": "A trauma-informed first-response digital survival toolkit for survivors of sexual assault, providing AI emotional support, medical guidance, and community resources.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ]
+}

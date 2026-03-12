@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "ngo": {
+      "title": "NGO",
+      "description": "Support organizations for survivors",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contact": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["name", "contact"]
+    },
+    "doctor": {
+      "title": "Doctor",
+      "description": "Specialized medical professionals",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "specialty": { "type": "string" },
+        "contact": { "type": "string" },
+        "location": { "type": "string" }
+      },
+      "required": ["name", "specialty", "contact"]
+    },
+    "community_post": {
+      "title": "Community Post",
+      "description": "Anonymous posts from the community",
+      "type": "object",
+      "properties": {
+        "content": { "type": "string" },
+        "author": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "likes": { "type": "number" },
+        "commentsCount": { "type": "number" }
+      },
+      "required": ["content", "author", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/ngos": {
+      "schema": "ngo",
+      "description": "Collection of NGOs"
+    },
+    "/doctors": {
+      "schema": "doctor",
+      "description": "Collection of doctors"
+    },
+    "/posts": {
+      "schema": "community_post",
+      "description": "Collection of community posts"
+    }
+  }
+}

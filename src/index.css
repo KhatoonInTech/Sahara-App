@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  
+  --color-app-bg: var(--app-bg);
+  --color-card-bg: var(--card-bg);
+  --color-section-bg: var(--section-bg);
+  
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  
+  --color-support-lavender: var(--support-lavender);
+  --color-support-blue: var(--support-blue);
+  --color-success: var(--success);
+  
+  --color-emergency: var(--emergency);
+  --color-emergency-soft: var(--emergency-soft);
+  
+  --color-chat-user: var(--chat-user);
+  --color-chat-ai: var(--chat-ai);
+  
+  --font-sans: "Inter", "Roboto", sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", serif;
+
+  /* Gradients */
+  --background-image-app-gradient: var(--app-gradient);
+  --background-image-chat-gradient: var(--chat-gradient);
+  --background-image-card-gradient: var(--card-gradient);
+  --background-image-emergency-gradient: var(--emergency-gradient);
+  --background-image-hero-gradient: var(--hero-gradient);
+}
+
+:root {
+  /* Light Theme */
+  --app-bg: #F7FAF9;
+  --card-bg: #FFFFFF;
+  --section-bg: #EEF4F3;
+  
+  --primary: #3FA7A3;
+  --primary-hover: #2E8E8A;
+  --primary-soft: #D6F1F0;
+  
+  --support-lavender: #E9E6F7;
+  --support-blue: #DDEBF7;
+  --success: #A8E6CF;
+  
+  --text-primary: #1E2A2A;
+  --text-secondary: #556B6B;
+  --text-muted: #8A9B9B;
+  
+  --emergency: #E76F6F;
+  --emergency-soft: #F8D7D7;
+  
+  --chat-user: #F1F4F4;
+  --chat-ai: #E9E6F7;
+
+  /* Gradients Light */
+  --app-gradient: linear-gradient(180deg, #F7FAF9 0%, #E8F5F4 50%, #DDF0F3 100%);
+  --chat-gradient: linear-gradient(180deg, #E8F5F4 0%, #EDE9F7 50%, #F7FAF9 100%);
+  --card-gradient: linear-gradient(180deg, #FFFFFF 0%, #F3F8F7 100%);
+  --emergency-gradient: linear-gradient(180deg, #FFF4F4 0%, #FDE3E3 100%);
+  --hero-gradient: linear-gradient(135deg, #E8F5F4 0%, #EDE9F7 100%);
+}
+
+.dark {
+  /* Dark Theme */
+  --app-bg: #0F1A1A;
+  --card-bg: #162525;
+  --section-bg: #1D3030;
+  
+  --primary: #4FC3BF;
+  --primary-hover: #3AA6A2;
+  --primary-soft: #1F3F3F;
+  
+  --support-lavender: #3B3659;
+  --support-blue: #243A4D;
+  --success: #5FAF87;
+  
+  --text-primary: #E6F0EF;
+  --text-secondary: #A3B8B8;
+  --text-muted: #7D9494;
+  
+  --emergency: #F08080;
+  --emergency-soft: #3D2020;
+  
+  --chat-user: #223333;
+  --chat-ai: #3B3659;
+
+  /* Gradients Dark */
+  --app-gradient: linear-gradient(180deg, #0F1A1A 0%, #162B2B 50%, #1B2A35 100%);
+  --chat-gradient: linear-gradient(180deg, #1A2634 0%, #2A3448 50%, #3B3659 100%);
+  --card-gradient: linear-gradient(180deg, #162525 0%, #1D3030 100%);
+  --emergency-gradient: linear-gradient(180deg, #2B1A1A 0%, #3D2020 100%);
+  --hero-gradient: linear-gradient(135deg, #162B2B 0%, #3B3659 100%);
+}
+
+@layer base {
+  body {
+    @apply bg-app-bg text-text-primary font-sans transition-colors duration-300;
+    font-size: 16px;
+  }
+  
+  .urdu-text {
+    @apply font-urdu leading-loose text-right;
+    direction: rtl;
+  }
+
+  .bg-noise {
+    position: relative;
+  }
+
+  .bg-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    z-index: 0;
+  }
+}
+
+.quick-exit-btn {
+  @apply fixed bottom-24 right-6 w-14 h-14 bg-emergency text-white rounded-full shadow-lg flex items-center justify-center z-50 transition-transform active:scale-90;
+}
+
