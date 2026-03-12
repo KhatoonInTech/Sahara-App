@@ -81,6 +81,7 @@ export default function App() {
 
   return (
     <Router>
+      <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
       <AnimatePresence mode="wait">
         {isLocked && !isAuthenticated ? (
           <LockScreen 
@@ -89,6 +90,7 @@ export default function App() {
             mode="unlock" 
             storedPin={storage.get('appPin')} 
             onSuccess={() => setIsAuthenticated(true)} 
+            triggerQuickExit={triggerQuickExit}
           />
         ) : (
           <motion.div 
@@ -98,7 +100,6 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="min-h-screen"
           >
-            <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
             <Routes>
               {!onboarded ? (
                 <Route 

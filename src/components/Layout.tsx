@@ -75,10 +75,11 @@ export default function Layout({
             {/* Quick Exit Toggle */}
             <button 
               onClick={triggerQuickExit}
-              className="p-2 rounded-full bg-emergency text-white hover:bg-emergency/90 transition-colors shadow-lg shadow-emergency/20"
+              className="px-3 py-2 rounded-full bg-emergency text-white hover:bg-emergency/90 transition-colors shadow-lg shadow-emergency/20 flex items-center gap-2"
               title="Quick Exit"
             >
-              <ShieldAlert size={20} />
+              <ShieldAlert size={18} />
+              <span className="text-[10px] font-bold uppercase tracking-tighter">Exit</span>
             </button>
 
             {/* App Lock Button */}

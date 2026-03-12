@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Unlock, Fingerprint, Delete, X } from 'lucide-react';
+import { Lock, Unlock, Fingerprint, Delete, X, ShieldAlert } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 
@@ -10,9 +10,10 @@ interface LockScreenProps {
   onSuccess: (pin?: string) => void;
   onCancel?: () => void;
   storedPin?: string;
+  triggerQuickExit?: () => void;
 }
 
-export default function LockScreen({ language, mode, onSuccess, onCancel, storedPin }: LockScreenProps) {
+export default function LockScreen({ language, mode, onSuccess, onCancel, storedPin, triggerQuickExit }: LockScreenProps) {
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [isConfirming, setIsConfirming] = useState(false);
@@ -39,6 +40,10 @@ export default function LockScreen({ language, mode, onSuccess, onCancel, stored
         } else {
           setError(t.privacy.wrongPin);
           setPin('');
+          // Security feature: Redirect to quick screen on wrong password
+          if (triggerQuickExit) {
+            triggerQuickExit();
+          }
         }
       } else if (mode === 'set') {
         if (!isConfirming) {
@@ -62,17 +67,39 @@ export default function LockScreen({ language, mode, onSuccess, onCancel, stored
   const handleBiometrics = async () => {
     if (window.PublicKeyCredential) {
       try {
-        // This is a simplified check. Real WebAuthn is more complex.
-        // For this app, we'll simulate a biometric check or use a basic credential if available.
-        // In a real production app, you'd use a library or a full WebAuthn flow.
         const available = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
         if (available && mode === 'unlock') {
-          // Simulate success for demo purposes if platform auth is available
-          onSuccess();
+          // Real WebAuthn request for local authentication
+          const challenge = new Uint8Array(32);
+          window.crypto.getRandomValues(challenge);
+          
+          const options: CredentialRequestOptions = {
+            publicKey: {
+              challenge,
+              timeout: 60000,
+              userVerification: 'required',
+              rpId: window.location.hostname,
+            }
+          };
+
+          try {
+            // This triggers the native FaceID/Fingerprint/PIN prompt
+            await navigator.credentials.get(options);
+            onSuccess();
+          } catch (err: any) {
+            if (err.name !== 'NotAllowedError') {
+              setError(language === 'en' ? 'Biometric authentication failed' : 'بایومیٹرک تصدیق ناکام ہوگئی');
+            }
+          }
+        } else if (!available) {
+          setError(language === 'en' ? 'Biometrics not available on this device' : 'اس ڈیوائس پر بایومیٹرکس دستیاب نہیں ہے');
         }
       } catch (e) {
         console.error('Biometrics error:', e);
+        setError(language === 'en' ? 'Biometrics error' : 'بایومیٹرک خرابی');
       }
+    } else {
+      setError(language === 'en' ? 'Biometrics not supported' : 'بایومیٹرکس سپورٹ نہیں ہے');
     }
   };
 
@@ -83,14 +110,16 @@ export default function LockScreen({ language, mode, onSuccess, onCancel, stored
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-app-bg flex flex-col items-center justify-center p-8"
     >
-      {onCancel && (
-        <button 
-          onClick={onCancel}
-          className="absolute top-8 right-8 p-2 text-text-muted hover:text-primary transition-colors"
-        >
-          <X size={24} />
-        </button>
-      )}
+      <div className="absolute top-8 right-8 flex justify-end items-center">
+        {onCancel && (
+          <button 
+            onClick={onCancel}
+            className="p-2 text-text-muted hover:text-primary transition-colors"
+          >
+            <X size={24} />
+          </button>
+        )}
+      </div>
 
       <div className="mb-12 flex flex-col items-center">
         <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6 shadow-inner">

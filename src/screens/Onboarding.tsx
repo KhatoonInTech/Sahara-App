@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock } from 'lucide-react';
+import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock, ShieldAlert } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
+import QuickExit from '../components/QuickExit';
 
 interface OnboardingProps {
   language: Language;
@@ -12,7 +13,10 @@ interface OnboardingProps {
 
 export default function Onboarding({ language, setLanguage, onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
+  const [isCamouflaged, setIsCamouflaged] = useState(false);
   const t = translations[language];
+
+  const triggerQuickExit = () => setIsCamouflaged(true);
 
   const steps = [
     {
@@ -97,7 +101,19 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
   const currentStep = steps[step];
 
   return (
-    <div className="min-h-screen bg-hero-gradient bg-noise flex flex-col items-center justify-center p-8 max-w-md mx-auto">
+    <div className="min-h-screen bg-hero-gradient bg-noise flex flex-col items-center justify-center p-8 max-w-md mx-auto relative">
+      <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
+      
+      <div className="absolute top-8 right-8">
+        <button 
+          onClick={triggerQuickExit}
+          className="p-3 rounded-full bg-emergency text-white shadow-lg shadow-emergency/20 flex items-center gap-2 px-4"
+        >
+          <ShieldAlert size={18} />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">Exit</span>
+        </button>
+      </div>
+
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
