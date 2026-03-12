@@ -82,6 +82,7 @@ export default function Home({ language }: HomeProps) {
       <div className="grid grid-cols-1 gap-4">
         {menuItems.map((item) => (
           <button
+            id={item.id === 'privacy' ? 'nav-privacy' : undefined}
             key={item.id}
             onClick={() => navigate(item.path)}
             className="flex items-center gap-4 p-5 rounded-3xl shadow-sm border text-left transition-all active:scale-[0.98] bg-card-gradient border-text-muted/5 hover:border-primary/20"

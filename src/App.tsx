@@ -16,10 +16,12 @@ import Education from './screens/Education';
 import Community from './screens/Community';
 import HelpCenter from './screens/HelpCenter';
 import Privacy from './screens/Privacy';
+import Tour from './components/Tour';
 
 export default function App() {
   const [language, setLanguage] = useState<'en' | 'ur'>(storage.get('language') || 'en');
   const [onboarded, setOnboarded] = useState<boolean>(storage.get('onboarded') || false);
+  const [showTour, setShowTour] = useState<boolean>(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(storage.get('theme') || 'light');
   const [isCamouflaged, setIsCamouflaged] = useState(false);
   const [isLocked, setIsLocked] = useState<boolean>(storage.get('appLockEnabled') || false);
@@ -79,9 +81,24 @@ export default function App() {
     isLockEnabled: storage.get('appLockEnabled') || false
   };
 
+  const handleOnboardingComplete = () => {
+    storage.set('onboarded', true);
+    setOnboarded(true);
+    // Show tour after onboarding if not already shown
+    if (!storage.get('tourShown')) {
+      setShowTour(true);
+    }
+  };
+
+  const handleTourComplete = () => {
+    storage.set('tourShown', true);
+    setShowTour(false);
+  };
+
   return (
     <Router>
       <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
+      {showTour && <Tour language={language} onComplete={handleTourComplete} />}
       <AnimatePresence mode="wait">
         {isLocked && !isAuthenticated ? (
           <LockScreen 
@@ -108,7 +125,7 @@ export default function App() {
                     <Onboarding 
                       language={language} 
                       setLanguage={setLanguage} 
-                      onComplete={() => setOnboarded(true)} 
+                      onComplete={handleOnboardingComplete} 
                     />
                   } 
                 />

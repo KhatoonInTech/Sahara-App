@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock, ShieldAlert, Fingerprint } from 'lucide-react';
+import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock, Fingerprint } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
-import QuickExit from '../components/QuickExit';
 import { storage } from '../utils/storage';
 
 interface OnboardingProps {
@@ -14,8 +13,8 @@ interface OnboardingProps {
 
 export default function Onboarding({ language, setLanguage, onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
-  const [isCamouflaged, setIsCamouflaged] = useState(false);
   const [biometricsSupported, setBiometricsSupported] = useState(false);
+  const [biometricError, setBiometricError] = useState('');
   const t = translations[language];
 
   React.useEffect(() => {
@@ -25,7 +24,32 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
     }
   }, []);
 
-  const triggerQuickExit = () => setIsCamouflaged(true);
+  const handleEnableBiometrics = async () => {
+    try {
+      const challenge = new Uint8Array(32);
+      window.crypto.getRandomValues(challenge);
+      
+      const options: CredentialRequestOptions = {
+        publicKey: {
+          challenge,
+          timeout: 60000,
+          userVerification: 'required',
+          rpId: window.location.hostname,
+        }
+      };
+
+      // Trigger biometric prompt to verify it works
+      await navigator.credentials.get(options);
+      
+      storage.set('biometricEnabled', true);
+      setStep(step + 1);
+    } catch (err: any) {
+      console.error('Biometric setup error:', err);
+      if (err.name !== 'NotAllowedError') {
+        setBiometricError(language === 'en' ? 'Biometric verification failed. Please try again.' : 'بایومیٹرک تصدیق ناکام ہوگئی۔ براہ کرم دوبارہ کوشش کریں۔');
+      }
+    }
+  };
 
   const steps = [
     {
@@ -97,16 +121,16 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
               ? 'Would you like to use your device\'s fingerprint or face recognition to unlock Sahara?' 
               : 'کیا آپ سہارا کو ان لاک کرنے کے لیے اپنے ڈیوائس کا فنگر پرنٹ یا چہرے کی شناخت استعمال کرنا چاہیں گے؟'}
           </p>
+          {biometricError && (
+            <p className="text-emergency text-xs mb-4 font-medium">{biometricError}</p>
+          )}
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => {
-                storage.set('biometricEnabled', true);
-                setStep(step + 1);
-              }}
+              onClick={handleEnableBiometrics}
               className="p-4 rounded-2xl border-2 border-primary bg-primary/5 text-primary font-bold flex items-center justify-center gap-3"
             >
               <Fingerprint size={20} />
-              {language === 'en' ? 'Enable Biometrics' : 'بایومیٹرکس فعال کریں'}
+              {language === 'en' ? 'Verify & Enable' : 'تصدیق کریں اور فعال کریں'}
             </button>
             <button
               onClick={() => {
@@ -145,18 +169,6 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
 
   return (
     <div className="min-h-screen bg-hero-gradient bg-noise flex flex-col items-center justify-center p-8 max-w-md mx-auto relative">
-      <QuickExit isCamouflaged={isCamouflaged} setIsCamouflaged={setIsCamouflaged} />
-      
-      <div className="absolute top-8 right-8">
-        <button 
-          onClick={triggerQuickExit}
-          className="p-3 rounded-full bg-emergency text-white shadow-lg shadow-emergency/20 flex items-center gap-2 px-4"
-        >
-          <ShieldAlert size={18} />
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Exit</span>
-        </button>
-      </div>
-
       <AnimatePresence mode="wait">
         <motion.div
           key={step}

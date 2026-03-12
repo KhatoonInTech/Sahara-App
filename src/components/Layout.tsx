@@ -30,11 +30,11 @@ export default function Layout({
   const location = useLocation();
 
   const navItems = [
-    { icon: Home, path: '/home', label: language === 'en' ? 'Home' : 'ہوم' },
-    { icon: MessageCircle, path: '/chat', label: language === 'en' ? 'Chat' : 'چیٹ' },
-    { icon: BookOpen, path: '/education', label: language === 'en' ? 'Education' : 'تعلیم' },
-    { icon: Users, path: '/community', label: language === 'en' ? 'Community' : 'کمیونٹی' },
-    { icon: HelpCircle, path: '/help', label: language === 'en' ? 'Help' : 'مدد' },
+    { icon: Home, path: '/home', label: language === 'en' ? 'Home' : 'ہوم', id: 'nav-home' },
+    { icon: MessageCircle, path: '/chat', label: language === 'en' ? 'Chat' : 'چیٹ', id: 'nav-chat' },
+    { icon: BookOpen, path: '/education', label: language === 'en' ? 'Education' : 'تعلیم', id: 'nav-education' },
+    { icon: Users, path: '/community', label: language === 'en' ? 'Community' : 'کمیونٹی', id: 'nav-community' },
+    { icon: HelpCircle, path: '/help', label: language === 'en' ? 'Help' : 'مدد', id: 'nav-help' },
   ];
 
   const isEmergency = location.pathname === '/emergency';
@@ -74,6 +74,7 @@ export default function Layout({
 
             {/* Quick Exit Toggle */}
             <button 
+              id="quick-exit-btn"
               onClick={triggerQuickExit}
               className="px-3 py-2 rounded-full bg-emergency text-white hover:bg-emergency/90 transition-colors shadow-lg shadow-emergency/20 flex items-center gap-2"
               title="Quick Exit"
@@ -128,6 +129,7 @@ export default function Layout({
             const isActive = location.pathname === item.path;
             return (
               <button
+                id={item.id}
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 className={`flex flex-col items-center gap-1 transition-colors ${
