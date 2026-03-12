@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock, ShieldAlert } from 'lucide-react';
+import { Shield, Globe, ArrowRight, CheckCircle2, HandHeart, Lock, ShieldAlert, Fingerprint } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 import QuickExit from '../components/QuickExit';
+import { storage } from '../utils/storage';
 
 interface OnboardingProps {
   language: Language;
@@ -14,7 +15,15 @@ interface OnboardingProps {
 export default function Onboarding({ language, setLanguage, onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
   const [isCamouflaged, setIsCamouflaged] = useState(false);
+  const [biometricsSupported, setBiometricsSupported] = useState(false);
   const t = translations[language];
+
+  React.useEffect(() => {
+    if (window.PublicKeyCredential) {
+      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        .then(available => setBiometricsSupported(available));
+    }
+  }, []);
 
   const triggerQuickExit = () => setIsCamouflaged(true);
 
@@ -79,6 +88,40 @@ export default function Onboarding({ language, setLanguage, onComplete }: Onboar
       ),
       icon: <Lock className="text-primary" size={48} />
     },
+    ...(biometricsSupported ? [{
+      title: language === 'en' ? 'Biometric Unlock' : 'بایومیٹرک ان لاک',
+      content: (
+        <div className="text-center px-6">
+          <p className={`text-gray-600 mb-6 ${language === 'ur' ? 'urdu-text' : ''}`}>
+            {language === 'en' 
+              ? 'Would you like to use your device\'s fingerprint or face recognition to unlock Sahara?' 
+              : 'کیا آپ سہارا کو ان لاک کرنے کے لیے اپنے ڈیوائس کا فنگر پرنٹ یا چہرے کی شناخت استعمال کرنا چاہیں گے؟'}
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => {
+                storage.set('biometricEnabled', true);
+                setStep(step + 1);
+              }}
+              className="p-4 rounded-2xl border-2 border-primary bg-primary/5 text-primary font-bold flex items-center justify-center gap-3"
+            >
+              <Fingerprint size={20} />
+              {language === 'en' ? 'Enable Biometrics' : 'بایومیٹرکس فعال کریں'}
+            </button>
+            <button
+              onClick={() => {
+                storage.set('biometricEnabled', false);
+                setStep(step + 1);
+              }}
+              className="p-4 rounded-2xl border-2 border-gray-100 text-gray-400 font-medium"
+            >
+              {language === 'en' ? 'Skip for now' : 'ابھی چھوڑ دیں'}
+            </button>
+          </div>
+        </div>
+      ),
+      icon: <Fingerprint className="text-primary" size={48} />
+    }] : []),
     {
       title: t.onboarding.privacyPromise,
       content: (

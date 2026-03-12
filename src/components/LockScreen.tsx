@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Fingerprint, Delete, X, ShieldAlert } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
+import { storage } from '../utils/storage';
 
 interface LockScreenProps {
   language: Language;
@@ -169,7 +170,9 @@ export default function LockScreen({ language, mode, onSuccess, onCancel, stored
         ))}
         <button
           onClick={handleBiometrics}
-          className="w-16 h-16 rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform hover:bg-primary/5"
+          className={`w-16 h-16 rounded-full flex items-center justify-center text-primary active:scale-90 transition-transform hover:bg-primary/5 ${
+            !storage.get('biometricEnabled') ? 'opacity-0 pointer-events-none' : ''
+          }`}
         >
           <Fingerprint size={28} />
         </button>

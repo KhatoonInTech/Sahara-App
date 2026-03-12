@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Lock, Trash2, Globe, ChevronRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, Trash2, Globe, ChevronRight, AlertCircle, CheckCircle2, Fingerprint } from 'lucide-react';
 import { translations } from '../i18n';
 import { Language } from '../types';
 import { storage } from '../utils/storage';
@@ -11,8 +11,17 @@ interface PrivacyProps {
 
 export default function Privacy({ language }: PrivacyProps) {
   const [isLockEnabled, setIsLockEnabled] = useState<boolean>(storage.get('appLockEnabled') || false);
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState<boolean>(storage.get('biometricEnabled') || false);
   const [showLockSetup, setShowLockSetup] = useState(false);
+  const [biometricsSupported, setBiometricsSupported] = useState(false);
   const t = translations[language];
+
+  React.useEffect(() => {
+    if (window.PublicKeyCredential) {
+      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+        .then(available => setBiometricsSupported(available));
+    }
+  }, []);
 
   const handleWipeData = () => {
     if (window.confirm(t.privacy.wipeConfirm)) {
@@ -41,6 +50,12 @@ export default function Privacy({ language }: PrivacyProps) {
       alert(t.privacy.pinSuccess);
       window.location.reload();
     }
+  };
+
+  const handleToggleBiometric = () => {
+    const newValue = !isBiometricEnabled;
+    storage.set('biometricEnabled', newValue);
+    setIsBiometricEnabled(newValue);
   };
 
   return (
@@ -87,6 +102,35 @@ export default function Privacy({ language }: PrivacyProps) {
               <ChevronRight size={18} className="text-text-muted opacity-30" />
             )}
           </button>
+
+          {isLockEnabled && biometricsSupported && (
+            <>
+              <div className="h-px bg-section-bg mx-5" />
+              <button 
+                onClick={handleToggleBiometric}
+                className="w-full flex items-center justify-between p-5 hover:bg-section-bg transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-2xl ${isBiometricEnabled ? 'bg-primary/10 text-primary' : 'bg-support-blue/30 text-text-muted'}`}>
+                    <Fingerprint size={20} />
+                  </div>
+                  <div className="text-left">
+                    <h3 className={`font-bold ${language === 'ur' ? 'urdu-text' : ''}`}>
+                      {language === 'en' ? 'Biometric Unlock' : 'بایومیٹرک ان لاک'}
+                    </h3>
+                    <p className="text-[10px] text-text-muted">
+                      {isBiometricEnabled 
+                        ? (language === 'en' ? 'Use Fingerprint/FaceID to unlock' : 'ان لاک کرنے کے لیے فنگر پرنٹ/فیس آئی ڈی استعمال کریں')
+                        : (language === 'en' ? 'Enable biometric authentication' : 'بایومیٹرک تصدیق فعال کریں')}
+                    </p>
+                  </div>
+                </div>
+                <div className={`w-10 h-5 rounded-full transition-colors relative ${isBiometricEnabled ? 'bg-primary' : 'bg-text-muted/20'}`}>
+                  <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${isBiometricEnabled ? 'left-6' : 'left-1'}`} />
+                </div>
+              </button>
+            </>
+          )}
           
           {isLockEnabled && (
             <>
